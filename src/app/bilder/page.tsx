@@ -31,15 +31,17 @@ export default function PhotosPage() {
       ? photos.findIndex((p) => p.id === selectedPhoto)
       : -1;
 
-  const getMinSrc = (src: string, minSrc?: string) => {
-    // All files are minified now; prefer provided minSrc, otherwise src
-    return minSrc ?? src;
-  };
+  // Display should use the smaller 25% image (API returns it as `src`).
+  // Downloads should use the full minified image if available (API returns it as `minSrc`).
+  const getDisplaySrc = (src: string, _full?: string) => src;
+  const getDownloadSrc = (src: string, full?: string) => full ?? src;
+
   const handlePhotoOpen = (id: number) => {
     setIsModalOpen(true);
     setSelectedPhoto(id);
     setIsNavigating(false);
   };
+
   const handlePhotoClose = () => {
     // Close the modal but keep the selected photo until the layout animation completes
     setIsModalOpen(false);
@@ -155,7 +157,7 @@ export default function PhotosPage() {
               >
                 <motion.img
                   layoutId={`photo-${photo.id}`}
-                  src={getMinSrc(photo.src, photo.minSrc)}
+                  src={getDisplaySrc(photo.src, photo.minSrc)}
                   className="h-full w-full overflow-hidden rounded-xl object-contain"
                   height={800}
                   width={800}
@@ -173,7 +175,9 @@ export default function PhotosPage() {
                 )}
                 {/* Download button on grid (desktop only) */}
                 <a
-                  href={getMinSrc(photo.src, photo.minSrc)}
+                  href={`/api/photos/download?url=${encodeURIComponent(
+                    getDownloadSrc(photo.src, photo.minSrc),
+                  )}`}
                   download
                   onClick={(e) => e.stopPropagation()}
                   className="absolute right-2 top-2 z-10 hidden rounded-lg p-1.5 text-white opacity-0 transition-opacity hover:bg-black/20 focus:outline-none group-hover:opacity-100 sm:block md:right-3 md:top-3"
@@ -200,23 +204,13 @@ export default function PhotosPage() {
                         <motion.img
                           layout
                           layoutId={`photo-${photo.id}`}
-                          src={getMinSrc(photo.src, photo.minSrc)}
+                          src={getDisplaySrc(photo.src, photo.minSrc)}
                           alt={photo.alt}
                           className="h-auto max-h-[90vh] w-auto max-w-[calc(100vw-2rem)] rounded-xl object-contain"
                           height={800}
                           width={800}
                           transition={sharedTransition}
                         />
-                        {/* Download Button */}
-                        <a
-                          href={getMinSrc(photo.src, photo.minSrc)}
-                          download
-                          onClick={(e) => e.stopPropagation()}
-                          className="absolute right-2 top-2 z-10 rounded-lg p-2 text-white transition-opacity hover:bg-black/20 group-hover:opacity-100 md:right-4 md:top-4 md:opacity-0"
-                          aria-label="Last ned bilde"
-                        >
-                          <Download className="h-5 w-5" />
-                        </a>
                         {/* Left Arrow */}
                         {selectedIndex > 0 && (
                           <button

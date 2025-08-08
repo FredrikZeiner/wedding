@@ -1,6 +1,5 @@
-import fs from 'fs/promises';
+import { list } from '@vercel/blob';
 import { NextResponse } from 'next/server';
-import path from 'path';
 
 interface PhotoEntry {
   id: number;
@@ -11,21 +10,41 @@ interface PhotoEntry {
 
 export async function GET() {
   try {
-    // Ensure Node.js runtime for fs
-    const photosDir = path.resolve(process.cwd(), 'public/photos');
-    const entries = await fs.readdir(photosDir);
+    // Top-level blobs
+    const { blobs } = await list();
 
-    const minifiedFiles = entries
-      .filter((name) => /\.(jpe?g|png|webp|gif)$/i.test(name))
-      .filter((name) => /-min\.[a-z0-9]+$/i.test(name))
-      .sort((a, b) => a.localeCompare(b));
+    // Group by base name, capturing full (-min) and small (-min-25) variants
+    const groups = new Map<string, { full?: string; small?: string }>();
 
-    const items: PhotoEntry[] = minifiedFiles.map((filename, index) => ({
-      id: index + 1,
-      src: `/photos/${filename}`,
-      minSrc: `/photos/${filename}`,
-      alt: `Wedding photo ${index + 1}`,
-    }));
+    blobs
+      .filter((b) => /\.(jpe?g|png|webp|gif)$/i.test(b.pathname))
+      .forEach((b) => {
+        const pathname = b.pathname; // e.g., DSC_1234-min.jpg or DSC_1234-min-25.jpg
+        const match = pathname.match(/^(.*?)(-min(?:-25)?)\.[^.]+$/i);
+        if (!match) return;
+        const base = match[1];
+        const variant = match[2]; // -min or -min-25
+        const entry = groups.get(base) ?? {};
+        if (/^-min-25$/i.test(variant)) {
+          entry.small = b.url;
+        } else if (/^-min$/i.test(variant)) {
+          entry.full = b.url;
+        }
+        groups.set(base, entry);
+      });
+
+    const keys = Array.from(groups.keys()).sort((a, b) => a.localeCompare(b));
+    const items: PhotoEntry[] = keys.map((key, index) => {
+      const g = groups.get(key)!;
+      const displayUrl = g.small ?? g.full!; // prefer 25% for display
+      const fullUrl = g.full ?? g.small!; // fallback if only one exists
+      return {
+        id: index + 1,
+        src: displayUrl,
+        minSrc: fullUrl,
+        alt: `Wedding photo ${index + 1}`,
+      };
+    });
 
     return NextResponse.json(items);
   } catch (error) {
@@ -38,5 +57,5 @@ export async function GET() {
 }
 
 // Explicitly ensure Node.js runtime (fs is not available on Edge)
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
