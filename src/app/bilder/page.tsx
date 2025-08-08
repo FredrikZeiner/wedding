@@ -99,7 +99,14 @@ export default function PhotosPage() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isModalOpen, selectedPhoto, selectedIndex]);
+  }, [
+    isModalOpen,
+    selectedPhoto,
+    selectedIndex,
+    goToNextPhoto,
+    goToPreviousPhoto,
+    photos.length,
+  ]);
 
   // When navigating within the modal, keep the grid item for the selected photo in view
   useEffect(() => {
@@ -142,7 +149,9 @@ export default function PhotosPage() {
               className="break-inside-avoid"
             >
               <div
-                className={`group relative z-0 cursor-pointer rounded-xl transition-all ${selectedPhoto !== photo.id ? '' : 'z-10'}`}
+                className={`group relative z-0 cursor-pointer rounded-xl transition-all ${
+                  selectedPhoto !== photo.id ? '' : 'z-10'
+                }`}
                 onClick={() => handlePhotoOpen(photo.id)}
               >
                 <motion.img
