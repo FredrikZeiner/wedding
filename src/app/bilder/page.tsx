@@ -32,9 +32,8 @@ export default function PhotosPage() {
       : -1;
 
   const getMinSrc = (src: string, minSrc?: string) => {
-    if (minSrc) return minSrc;
-    if (/-min\.[a-zA-Z0-9]+$/.test(src)) return src;
-    return src.replace(/(\.[a-zA-Z0-9]+)$/i, '-min$1');
+    // All files are minified now; prefer provided minSrc, otherwise src
+    return minSrc ?? src;
   };
   const handlePhotoOpen = (id: number) => {
     setIsModalOpen(true);
@@ -174,7 +173,7 @@ export default function PhotosPage() {
                 )}
                 {/* Download button on grid (desktop only) */}
                 <a
-                  href={photo.src}
+                  href={getMinSrc(photo.src, photo.minSrc)}
                   download
                   onClick={(e) => e.stopPropagation()}
                   className="absolute right-2 top-2 z-10 hidden rounded-lg p-1.5 text-white opacity-0 transition-opacity hover:bg-black/20 focus:outline-none group-hover:opacity-100 sm:block md:right-3 md:top-3"
@@ -210,7 +209,7 @@ export default function PhotosPage() {
                         />
                         {/* Download Button */}
                         <a
-                          href={photo.src}
+                          href={getMinSrc(photo.src, photo.minSrc)}
                           download
                           onClick={(e) => e.stopPropagation()}
                           className="absolute right-2 top-2 z-10 rounded-lg p-2 text-white transition-opacity hover:bg-black/20 group-hover:opacity-100 md:right-4 md:top-4 md:opacity-0"
