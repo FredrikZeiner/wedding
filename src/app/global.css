@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@import "../../theme.css";
+@source "./**/*.tsx";
+
+@font-face {
+  font-family: 'Billy Ohio';
+  src: url('/fonts/BillyOhio.woff2') format('woff2'),
+       url('/fonts/BillyOhio.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Baskerville';
+  src: url('/fonts/Baskerville.woff2') format('woff2'),
+       url('/fonts/Baskerville.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-wedding-brown-700: #756356;
+  --color-wedding-gold-500: #D2BB4C;
+  --color-wedding-gold-400: #E9BD80;
+  --color-wedding-gold-300: #E2BF8E;
+  --color-wedding-gold-200: #EAD4B6;
+  --color-wedding-gold-100: #FCF9F5;
+  --text-10xl: 9rem;
+  --text-11xl: 10rem;
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+  --screen-2xl: 1536px;
+  --screen-3xl: 1920px;
+}
+
+@layer base {
+  html {
+    font-family: Baskerville, "Baskerville Old Face", "Hoefler Text", Garamond, "Times New Roman", serif;
+  }
+}
+
+.font-billy {
+  font-family: 'Billy Ohio', cursive;
+}
+
+.font-baskerville {
+  font-family: Baskerville, "Baskerville Old Face", "Hoefler Text", Garamond, "Times New Roman", serif;
+}
