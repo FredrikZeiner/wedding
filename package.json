@@ -2,6 +2,11 @@
   "name": "wedding",
   "private": true,
   "version": "0.1.0",
+  "engines": {
+    "node": "20.x",
+    "pnpm": ">=9 <11"
+  },
+  "packageManager": "pnpm@9.12.3",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
