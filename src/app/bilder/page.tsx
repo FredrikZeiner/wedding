@@ -315,7 +315,7 @@ export default function PhotosPage() {
           loadMore();
         }
       },
-      { root: null, rootMargin: '200px', threshold: 0 },
+      { root: null, rootMargin: '1200px 0px', threshold: 0.01 },
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -452,6 +452,18 @@ export default function PhotosPage() {
                           width={photo.width}
                           transition={sharedTransition}
                         />
+                        {/* Download button on modal */}
+                        <a
+                          href={`/api/photos/download?url=${encodeURIComponent(
+                            getDownloadSrc(photo.src, photo.minSrc),
+                          )}`}
+                          download
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute right-2 top-2 md:top-4 md:right-4 z-10 rounded-lg p-1.5 text-white md:opacity-0 transition-opacity hover:bg-black/20 focus:outline-none group-hover:opacity-100"
+                          aria-label="Last ned bilde"
+                        >
+                          <Download className="h-5 w-5" />
+                        </a>
                         {/* Left Arrow */}
                         {selectedIndex > 0 && (
                           <button
